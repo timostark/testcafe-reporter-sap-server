@@ -58,7 +58,7 @@
     "operator-assignment": [2, "always"],
     "quotes": [2, "single", "avoid-escape"],
     "space-before-blocks": [2, "always"],
-    "prefer-const": 2,
+    "prefer-const": 0,
     "no-path-concat": 2,
     "no-undefined": 2,
     "strict": 0,
