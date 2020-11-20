@@ -3,7 +3,8 @@ const https = require('https');
 const fs = require('fs');
 const FormData = require('form-data');
 
-import { ui5Steps } from 'ui5-testcafe-selector-utils';
+const ui5Utils = require('ui5-testcafe-selector-utils');
+const ui5Steps = ui5Utils.ui5Steps;
 
 const instance = axios.create({
     httpsAgent: new https.Agent({
