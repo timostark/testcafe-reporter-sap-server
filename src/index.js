@@ -81,7 +81,7 @@ module.exports = function () {
             this.testResults.failedCount = result.failedCount;
             this.testResults.skippedCount = result.skippedCount;
             this.testResults.product = '';
-            this.testResults.system = process.env.TEST_SYSTEM;
+            this.testResults.testSystem = process.env.TEST_SYSTEM;
 
             if (this.testResults.fixtures && this.testResults.fixtures[0].meta && this.testResults.fixtures[0].meta.PRODUCT) {
                 this.testResults.product = this.testResults.fixtures[0].meta.PRODUCT;
