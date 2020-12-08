@@ -63,7 +63,8 @@ module.exports = function () {
                 meta: meta,
                 name: name,
                 testRunInfo: testRunInfo,
-                steps: ui5Steps.getCurSteps()
+                steps: ui5Steps.getCurSteps(),
+                consoleErrorLog: ui5Steps.getCurConsoleErrorLogs()
             });
         },
 
@@ -80,6 +81,7 @@ module.exports = function () {
             this.testResults.failedCount = result.failedCount;
             this.testResults.skippedCount = result.skippedCount;
             this.testResults.product = '';
+            this.testResults.system = process.env.TEST_SYSTEM;
 
             if (this.testResults.fixtures && this.testResults.fixtures[0].meta && this.testResults.fixtures[0].meta.PRODUCT) {
                 this.testResults.product = this.testResults.fixtures[0].meta.PRODUCT;
