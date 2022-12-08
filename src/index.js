@@ -5,14 +5,13 @@ const FormData = require('form-data');
 
 const ui5Utils = require('ui5-testcafe-selector-utils');
 const ui5Steps = ui5Utils.ui5Steps;
+const ui5Config = ui5Utils.ui5Config;
 
 const instance = axios.create({
     httpsAgent: new https.Agent({
         rejectUnauthorized: false
     })
 });
-
-var config = require(process.cwd() + '\\.testcafe-sap-server.json');
 
 module.exports = function () {
     return {
@@ -59,11 +58,29 @@ module.exports = function () {
         },
 
         async reportTestDone(name, testRunInfo, meta) {
+            var aSteps = ui5Steps.getCurSteps(meta.TEST_CASE);
+            var aStepsAdd = [];
+            
+            for (var i = 0; i < aSteps.length; i++) {
+                aStepsAdd.push({
+                    activity: aSteps[i].activity,
+                    endTime: aSteps[i].endTime,
+                    isFirstUI5Selector: aSteps[i].isFirstUI5Selector,
+                    isUI5Selector: aSteps[i].isUI5Selector,
+                    selector: aSteps[i].selector,
+                    startTime: aSteps[i].startTime,
+                    status: aSteps[i].status,
+                    stepId: aSteps[i].stepId,
+                    stepType: aSteps[i].stepType,
+                    testName: aSteps[i].testName
+                });
+            }
             this.currentTestFixture.tests.push({
                 meta: meta,
                 name: name,
                 testRunInfo: testRunInfo,
-                steps: ui5Steps.getCurSteps(),
+                steps: aStepsAdd,
+                traceLog: ui5Steps.getTestIdErrorLog(meta.TEST_CASE),
                 consoleErrorLog: ui5Steps.getCurConsoleErrorLogs()
             });
         },
@@ -71,6 +88,10 @@ module.exports = function () {
         async reportTaskDone(endTime, passed, warnings, result) {
             if (this.currentTestFixture) {
                 this.testResults.fixtures.push(this.currentTestFixture);
+            }
+
+            if (!ui5Config.rest || !ui5Config.rest.videoUrl || !ui5Config.rest.url || !ui5Config.rest.password || !ui5Config.rest.user) {
+                return;
             }
 
             this.testResults.endTime = endTime;
@@ -82,6 +103,7 @@ module.exports = function () {
             this.testResults.skippedCount = result.skippedCount;
             this.testResults.product = '';
             this.testResults.testSystem = process.env.TEST_SYSTEM;
+            this.testResults.runType = process.env.TEST_RUN_TYPE;
 
             if (this.testResults.fixtures && this.testResults.fixtures[0].meta && this.testResults.fixtures[0].meta.PRODUCT) {
                 this.testResults.product = this.testResults.fixtures[0].meta.PRODUCT;
@@ -122,11 +144,13 @@ module.exports = function () {
                         let aHeaders = formData.getHeaders();
 
                         aHeaders['filename'] = oCurTest.testRunInfo.testId;
-                        await instance.post(config.videoUrl, formData, {
+                        await instance.post(ui5Config.rest.videoUrl, formData, {
                             headers: aHeaders,
+                            maxContentLength: Infinity,
+                            maxBodyLength: Infinity,
                             auth: {
-                                username: config.user,
-                                password: config.password
+                                username: ui5Config.rest.user,
+                                password: ui5Config.rest.password
                             }
                         });
                     }
@@ -143,10 +167,12 @@ module.exports = function () {
                 }
             }
 
-            await instance.post(config.url, this.testResults, {
+            await instance.post(ui5Config.rest.url, this.testResults, {
+                maxContentLength: Infinity,
+                maxBodyLength: Infinity,
                 auth: {
-                    username: config.user,
-                    password: config.password
+                    username: ui5Config.rest.user,
+                    password: ui5Config.rest.password
                 }
             });
         }
