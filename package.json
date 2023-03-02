@@ -1,6 +1,6 @@
 {
   "name": "testcafe-reporter-sap-server",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "sap-server TestCafe reporter plugin.",
   "repository": "https://github.com/techmuc/testcafe-reporter-sap-server",
   "author": {
