@@ -10,7 +10,9 @@ const ui5Config = ui5Utils.ui5Config;
 const instance = axios.create({
     httpsAgent: new https.Agent({
         rejectUnauthorized: false
-    })
+    }),
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity,
 });
 
 module.exports = function () {
